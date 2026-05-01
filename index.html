@@ -3,121 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQUARE & ACRE | COMING SOON</title>
-<link rel="icon" type="image/png" href="TOWER.png">
+    <title>SQUARE & ACRE REALTY | The Advisory</title>
+    <link rel="icon" type="image/png" href="TOWER.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;400;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
             --brand-teal: #142828;
             --brand-gold: #c5a082;
+            --brand-white: #ffffff;
         }
+
+        /* Hide default cursor only on devices with a mouse */
+        @media (hover: hover) and (pointer: fine) {
+            * { cursor: none; }
+        }
+
+        html { scroll-behavior: smooth; }
 
         body {
             background-color: var(--brand-teal);
-            color: #ffffff;
+            color: var(--brand-white);
             font-family: 'Montserrat', sans-serif;
             margin: 0;
-            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        #cursor {
+            width: 12px;
+            height: 12px;
+            background: var(--brand-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        /* Disable custom cursor on touch devices */
+        @media (hover: none) {
+            #cursor { display: none !important; }
+        }
+
+        /* --- ARCHITECTURAL BACKGROUNDS --- */
+        .blueprint-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: 
+                linear-gradient(rgba(197, 160, 130, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(197, 160, 130, 0.2) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .grain {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.06;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3BaseFilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* --- LOGO INITIAL REVEAL --- */
+        .logo-part {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo-part.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- SCROLL LINE ANIMATION --- */
+        @keyframes scrollLine {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            50.1% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
+        }
+        
+        .scroll-indicator {
+            animation: scrollLine 2.5s infinite cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        /* --- CONTENT TYPOGRAPHY & LAYOUT --- */
+        .brochure-section {
+            min-height: 100vh;
+            padding: 12vh 6vw; /* Mobile padding */
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            position: relative;
+        }
+        @media (min-width: 768px) {
+            .brochure-section { padding: 15vh 8vw; } /* Desktop padding */
         }
 
-        /* Image Containers for precise scaling */
-        .img-tower {
-            width: clamp(100px, 15vw, 180px);
-            height: auto;
-            margin-bottom: 2.5rem;
-        }
-
-        .img-brand-name {
-            width: clamp(280px, 50vw, 600px);
-            height: auto;
-            margin-bottom: 1rem;
-        }
-
-        .img-realty {
-            width: clamp(120px, 20vw, 240px);
-            height: auto;
-            opacity: 0.9;
-        }
-
-        /* Refined Coming Soon Text */
-        .coming-soon {
-            margin-top: 5rem;
-            font-weight: 200;
+        .text-massive {
+            font-size: clamp(3rem, 12vw, 12rem); /* Adjusted for mobile */
+            line-height: 0.85;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1.5em;
-            text-indent: 1.5em;
-            color: var(--brand-gold);
-            font-size: clamp(0.65rem, 1.5vw, 0.85rem);
-            border-top: 1px solid rgba(197, 160, 130, 0.3);
-            padding-top: 2rem;
+            letter-spacing: -0.05em;
         }
 
-        /* Animations */
-        @keyframes reveal {
-            0% { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        .serif-italic {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 400;
         }
 
-        .animate {
-            animation: reveal 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        .gold-accent { color: var(--brand-gold); }
+
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .delay-1 { animation-delay: 0.2s; }
-        .delay-2 { animation-delay: 0.4s; }
-        .delay-3 { animation-delay: 0.6s; }
-
-        /* Grain for that expensive texture */
-        .grain {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            opacity: 0.05;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3BaseFilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        .reveal-element.active {
+            opacity: 1;
+            transform: translateY(0);
         }
+
+        /* Vertical Line element */
+        .v-line {
+            position: absolute;
+            left: 4vw;
+            top: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--brand-gold), transparent);
+            height: 0;
+            transition: height 2s ease;
+        }
+        .v-line.active { height: 100%; }
+
     </style>
 </head>
-<body>
+<body class="bg-[#142828]">
+    <div id="cursor"></div>
     <div class="grain"></div>
+    <div class="blueprint-bg"></div>
 
-    <main class="flex flex-col items-center text-center px-10">
+    <!-- STICKY NAV (Hidden until scrolled past hero) -->
+    <nav id="sticky-nav" class="fixed top-0 left-0 w-full z-50 transform -translate-y-full transition-transform duration-700 ease-in-out bg-[#142828]/95 backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <img src="TOWER.png" class="h-8 md:h-12 w-auto" alt="Square & Acre Icon">
+            <img src="MAIN_TEXT.png" class="h-3 md:h-4 w-auto hidden sm:block" alt="Square & Acre">
+        </div>
+        <div class="text-[9px] uppercase tracking-[0.4em] opacity-50 gold-accent">
+            Advisory 2026
+        </div>
+    </nav>
+
+    <!-- HERO SECTION (Full viewport, Parallaxes away smoothly) -->
+    <section id="hero" class="relative h-[100dvh] w-full flex flex-col justify-center items-center z-10 overflow-hidden">
+        <div id="hero-logos" class="flex flex-col items-center w-full px-6 text-center z-20">
+            <img src="TOWER.png" class="logo-part w-24 md:w-32 lg:w-48 mb-6 md:mb-8" alt="Tower Icon">
+            <img src="MAIN_TEXT.png" class="logo-part w-full max-w-[280px] md:max-w-[400px] lg:max-w-[500px] mb-3 md:mb-4" alt="Square & Acre">
+            <img src="SUB_TEXT.png" class="logo-part w-32 md:w-48 lg:w-64" alt="Realty">
+        </div>
         
-        <!-- 1. THE TOWER IMAGE -->
-        <div class="animate">
-            <img src="TOWER.png" alt="Square & Acre Tower" class="img-tower" onerror="this.style.display='none'">
-            <!-- Fallback if image isn't loaded -->
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-4 opacity-50">
+            <span class="text-[8px] uppercase tracking-[0.4em] font-light">Descend</span>
+            <div class="w-px h-16 bg-white/10 relative overflow-hidden">
+                <div class="w-full h-full bg-brand-gold scroll-indicator absolute top-0 left-0"></div>
+            </div>
         </div>
+    </section>
 
-        <!-- 2. THE BRAND NAME IMAGE (SQUARE & ACRE) -->
-        <div class="animate delay-1">
-            <img src="MAIN_TEXT.png" alt="SQUARE & ACRE" class="img-brand-name">
-        </div>
+    <!-- BROCHURE CONTENT -->
+    <main id="content" class="relative z-20 bg-[#142828]">
+        
+        <!-- SECTION: THE MANIFESTO -->
+        <section class="brochure-section">
+            <div class="v-line"></div>
+            
+            <div class="max-w-4xl mx-auto md:mx-0">
+                <p class="uppercase tracking-[0.6em] text-[9px] md:text-[10px] mb-8 md:mb-12 gold-accent reveal-element">Established 2026</p>
+                <h1 class="text-massive reveal-element">
+                    The<br>
+                    <span class="serif-italic gold-accent italic">Advisory</span>
+                </h1>
+                <p class="mt-8 md:mt-16 text-lg md:text-2xl font-extralight leading-relaxed reveal-element opacity-70">
+                    Square & Acre Realty is not a brokerage. It is a private real estate consulate. We navigate the friction between high-density urban infrastructure and the vast horizons of the acre.
+                </p>
+                <div class="mt-8 md:mt-12 flex items-center gap-4 md:gap-6 reveal-element">
+                    <div class="h-px w-12 md:w-20 bg-brand-gold opacity-30"></div>
+                    <span class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] opacity-40 italic">A Legacy of Discretion</span>
+                </div>
+            </div>
+        </section>
 
-        <!-- 3. THE REALTY IMAGE -->
-        <div class="animate delay-2">
-            <img src="SUB_TEXT.png" alt="REALTY" class="img-realty">
-        </div>
+        <!-- SECTION: THE ASSETS -->
+        <section class="brochure-section bg-white text-[#142828] overflow-hidden">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                <div class="reveal-element">
+                    <h2 class="text-5xl md:text-7xl font-bold uppercase leading-[0.9] mb-8 md:mb-12">
+                        Arbitrage<br>
+                        <span class="serif-italic gold-accent text-4xl md:text-6xl">of</span> Intent
+                    </h2>
+                    <p class="text-base md:text-xl font-light leading-relaxed mb-6 md:mb-10">
+                        We identify the "Square"—the structural integrity of the city—and the "Acre"—the raw potential of the earth. 
+                    </p>
+                    <p class="text-base md:text-xl font-light leading-relaxed">
+                        Our role is the orchestration of the acquisition, ensuring that value is never left to chance.
+                    </p>
+                </div>
+                <div class="relative group reveal-element delay-100 mt-8 lg:mt-0">
+                    <div class="absolute -inset-2 md:-inset-4 border border-teal-900/10 transition-transform group-hover:scale-105 duration-700"></div>
+                    <div class="bg-[#142828] text-white p-8 md:p-12 aspect-square md:aspect-[4/5] flex flex-col justify-between">
+                        <span class="text-[9px] md:text-[10px] tracking-widest uppercase opacity-40">Precision Portfolio</span>
+                        <h3 class="text-4xl md:text-5xl font-black italic serif-italic">Zero Friction.</h3>
+                        <p class="text-xs md:text-sm opacity-50 font-light italic mt-6">Private Advisory Services for the Institutional & Private Investor.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <!-- 4. COMING SOON (Styled Text for contrast) -->
-        <div class="coming-soon animate delay-3">
-            Coming Soon
-        </div>
+        <!-- SECTION: THE PROTOCOL -->
+        <section class="brochure-section">
+            <div class="v-line"></div>
+            <div class="flex flex-col lg:flex-row gap-16 lg:gap-24 border-t border-white/5 pt-16 md:pt-20">
+                
+                <!-- The Vertical -->
+                <div class="flex-1 reveal-element">
+                    <!-- Structural Wireframe SVG -->
+                    <svg class="w-16 md:w-20 mb-8 gold-accent opacity-50" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M40 90V30L50 10L60 30V90M30 90V50L40 40M70 90V50L60 40M15 90H85" />
+                        <path d="M45 40H55M45 55H55M45 70H55" />
+                        <circle cx="50" cy="10" r="3" fill="currentColor" />
+                    </svg>
+                    
+                    <h4 class="text-3xl md:text-4xl font-bold uppercase mb-6 italic">The Vertical</h4>
+                    <p class="font-light opacity-60 leading-relaxed text-sm md:text-base mb-6">
+                        Managing the acquisition of high-density urban landmarks and commercial infrastructure.
+                    </p>
+                    <ul class="text-[10px] md:text-xs uppercase tracking-widest opacity-40 space-y-3">
+                        <li class="flex items-center gap-3"><div class="w-4 h-px bg-current"></div> Structural Valuation</li>
+                        <li class="flex items-center gap-3"><div class="w-4 h-px bg-current"></div> Tower Acquisition</li>
+                        <li class="flex items-center gap-3"><div class="w-4 h-px bg-current"></div> Urban Zoning Strategy</li>
+                    </ul>
+                </div>
+
+                <!-- The Horizontal -->
+                <div class="flex-1 reveal-element delay-100 border-t lg:border-t-0 border-white/10  pt-12">
+                                       
+                    <!-- Isometric Land Grid SVG -->
+                    <svg class="w-16 md:w-20 mb-8 lg:mt-[-4rem] gold-accent opacity-50" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M10 50L50 30L90 50L50 70Z" />
+                        <path d="M30 40L70 60M30 60L70 40" />
+                        <path d="M10 60L50 80L90 60" />
+                        <circle cx="50" cy="50" r="2" fill="currentColor" />
+                    </svg>
+
+                    <h4 class="text-3xl md:text-4xl font-bold uppercase mb-6 italic">The Horizontal</h4>
+                    <p class="font-light opacity-60 leading-relaxed text-sm md:text-base mb-6">
+                        Securing the legacy of raw earth. From extensive developmental plots to strategic land banks.
+                    </p>
+                    <ul class="text-[10px] md:text-xs uppercase tracking-widest opacity-40 space-y-3">
+                        <li class="flex items-center gap-3"><div class="w-4 h-px bg-current"></div> Land Bank Structuring</li>
+                        <li class="flex items-center gap-3"><div class="w-4 h-px bg-current"></div> Topographical Assessment</li>
+                        <li class="flex items-center gap-3"><div class="w-4 h-px bg-current"></div> Horizon Development</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: THE CONNECTION -->
+        <section class="brochure-section items-center text-center">
+            <div class="reveal-element w-full">
+                <h2 class="text-4xl md:text-7xl lg:text-9xl font-bold uppercase mb-12 md:mb-16">
+                    Connect<br>
+                    <span class="serif-italic gold-accent italic">to</span> Excellence
+                </h2>
+                <div class="flex flex-col items-center gap-8 md:gap-10">
+                    <div class="h-px w-24 md:w-32 bg-var(--brand-gold) opacity-30"></div>
+                    
+                    <div class="space-y-4 w-full px-4 mt-8">
+                        <p class="text-2xl md:text-5xl font-light tracking-[0.1em] md:tracking-[0.2em] gold-accent">+91 9978491803</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     </main>
 
-    <!-- Est. Marker -->
-    <footer class="fixed bottom-10 animate delay-3 opacity-20">
-        <p class="text-[9px] uppercase tracking-[0.6em]">Est. 2026</p>
+    <footer class="px-6 py-12 md:p-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 bg-black/40">
+        <div class="flex items-center gap-4 md:gap-6 opacity-20 grayscale">
+            <img src="TOWER.png" class="h-5 md:h-6" alt="">
+            <img src="MAIN_TEXT.png" class="h-3 md:h-4" alt="">
+        </div>
+        <p class="text-[7px] md:text-[8px] uppercase tracking-[0.4em] md:tracking-[0.8em] opacity-20 text-center md:text-right">© 2026 Square & Acre Realty. Arbitrage of Sovereignty.</p>
     </footer>
 
+    <script>
+        // --- CUSTOM CURSOR ---
+        const cursor = document.getElementById('cursor');
+        // Only run cursor logic if the device supports hover
+        if (window.matchMedia("(hover: hover)").matches) {
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                // Enlarge cursor on clickable elements
+                const isClickable = e.target.closest('a') || e.target.closest('button');
+                cursor.style.transform = `scale(${isClickable ? 4 : 1}) translate(-50%, -50%)`;
+                cursor.style.transformOrigin = 'top left'; // Fixes offset scaling issue
+            });
+        }
+
+        // --- SCROLL ANIMATIONS (Parallax & Sticky Nav) ---
+        const heroLogos = document.getElementById('hero-logos');
+        const stickyNav = document.getElementById('sticky-nav');
+        
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            const heroHeight = window.innerHeight;
+            
+            // 1. Hero Parallax Fade Out
+            if(scrollPos <= heroHeight && heroLogos) {
+                // Move down at half speed of scroll
+                heroLogos.style.transform = `translateY(${scrollPos * 0.4}px)`;
+                // Fade out progressively
+                heroLogos.style.opacity = 1 - (scrollPos / (heroHeight * 0.7));
+            }
+
+            // 2. Sticky Nav Reveal
+            // Show nav after scrolling past 60% of the hero section
+            if (scrollPos > heroHeight * 0.6) {
+                stickyNav.classList.remove('-translate-y-full');
+            } else {
+                stickyNav.classList.add('-translate-y-full');
+            }
+        });
+
+        // --- INITIAL REVEAL SEQUENCE ---
+        window.onload = () => {
+            const logoParts = document.querySelectorAll('.logo-part');
+            logoParts.forEach((part, i) => {
+                setTimeout(() => {
+                    part.classList.add('visible');
+                }, 200 + (i * 300));
+            });
+
+            // Trigger observers for section animations
+            initObservers();
+        };
+
+        function initObservers() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 }); // Trigger earlier on mobile
+
+            document.querySelectorAll('.reveal-element, .v-line').forEach(el => observer.observe(el));
+        }
+    </script>
 </body>
 </html>
